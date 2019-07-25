@@ -44,7 +44,7 @@ func (u *passenger) deleteUser(db *sql.DB) error {
 	return err
 }
 func (u *passenger) createUser(db *sql.DB) error {
-	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status,pass) VALUES('%s','%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus)
+	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status,pass) VALUES('%s','%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, u.Pass)
 	_, err := db.Exec(statement)
 	if err != nil {
 		return err

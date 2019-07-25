@@ -26,7 +26,7 @@ API URL : https://sia-lounge.herokuapp.com
 | country_code |  VARCHAR(45)                        | Not Null, Unique                       |
 | mobile       |  VARCHAR(45)                        | Not Null                               |
 | tier_status  |  ENUM(gold,silver,platinum)         | Not Null                               |
-| pass         |  CHAR(76)                           |                                        |
+| pass         |  VARCHAR(30)                        | Not Null                               |
 
 > Note : Please don't input FFN while using POST Method of "/user" endpoint. 
 
