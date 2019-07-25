@@ -23,5 +23,6 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 | country_code |  VARCHAR(45)                        | Not Null, Unique                       |
 | mobile       |  VARCHAR(45)                        | Not Null                               |
 | tier_status  |  ENUM(gold,silver,platinum)         | Not Null                               |
+| pass         |  CHAR(76)                           |                                        |
 
 **NOTE :** Please don't input FFN while using POST Method of "/user" endpoint. 
