@@ -41,7 +41,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.updateUser).Methods("PUT")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.deleteUser).Methods("DELETE")
 	//lounge-login
-	a.Router.HandleFunc("/loungelogin/{lounge_id:[0-9]+}", a.deleteUser).Methods("GET")
+	a.Router.HandleFunc("/loungelogin/{lounge_id:[0-9]+}", a.getLoungeLogin).Methods("GET")
 }
 
 func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
