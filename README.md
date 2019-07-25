@@ -13,7 +13,7 @@ Following endpoints are live :
 
 Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 
-**  Structure of passenger_details Table  **
+**Structure of passenger_details Table**
 
 | Field Name   |  Data Type    | Extras                                 |
 | ------------ | ------------- | -------------------------------------- |            
@@ -23,5 +23,5 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 | country_code |  VARCHAR(45)  | Not Null, Unique                       |
 | mobile       |  VARCHAR(45)  | Not Null                               |
 
-** NOTE : ** Please don't input FFN while using POST Method of "/user" endpoint. 
+**NOTE :** Please don't input FFN while using POST Method of "/user" endpoint. 
 | tier_status  |  ENUM         | Not Null                               |
