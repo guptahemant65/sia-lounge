@@ -4,12 +4,12 @@ API URL : https://sia-lounge.herokuapp.com/
 
 Following endpoints are live : 
 
-1. **"/users"**, Methods("GET")
-2. **"/user"**, Methods("POST")
-3. **"/user/[:ffn]"**, Methods("GET")
-4. **"/user/[:ffn]"**, Methods("PUT")
-5. **"/user/[:ffn]"**, Methods("DELETE")
-6. **"/loungelogin/[:lounge_id]"**, Methods("GET")
+1. **"/users"**, Methods("GET") - to get all details of all passengers.
+2. **"/user"**, Methods("POST") -  to create a new user.
+3. **"/user/[:ffn]"**, Methods("GET") - to get details of specific passenger through FFN.
+4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
+5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
+6. **"/loungelogin/[:lounge_id]"**, Methods("GET") - to get login credentials of lounge through Lounge ID.
 
 #### Sample Data to try out API : 
 
