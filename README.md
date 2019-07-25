@@ -13,7 +13,7 @@ Following endpoints are live :
 
 Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 
-#### Structure of passenger_details Table
+### Structure of passenger_details Table
 
 | Field Name   |  Data Type                          |  Extras                                |
 | ------------ | -------------                       | -------------------------------------- |            

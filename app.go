@@ -34,11 +34,34 @@ func (a *App) Run(addr string) {
 }
 
 func (a *App) initializeRoutes() {
+	//passenger_details
 	a.Router.HandleFunc("/users", a.getUsers).Methods("GET")
 	a.Router.HandleFunc("/user", a.createUser).Methods("POST")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.getUser).Methods("GET")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.updateUser).Methods("PUT")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.deleteUser).Methods("DELETE")
+	//lounge-login
+	a.Router.HandleFunc("/loungelogin/{lounge_id:[0-9]+}", a.deleteUser).Methods("GET")
+}
+
+func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	loungeID, err := strconv.Atoi(vars["loungeID"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Lounge ID")
+		return
+	}
+	u := loungeLogin{loungeID: loungeID}
+	if err := u.getLoungeLogin(a.DB); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			respondWithError(w, http.StatusNotFound, "Lounge not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+	respondWithJSON(w, http.StatusOK, u)
 }
 
 func (a *App) getUser(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +83,7 @@ func (a *App) getUser(w http.ResponseWriter, r *http.Request) {
 	}
 	respondWithJSON(w, http.StatusOK, u)
 }
+
 func (a *App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ffn, err := strconv.Atoi(vars["ffn"])

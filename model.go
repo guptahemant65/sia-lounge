@@ -13,15 +13,28 @@ type passenger struct {
 	CountryCode string `json:"country_code"`
 	Mobile      string `json:"mobile"`
 	TierStatus  string `json:"tier_status"`
+	Pass        string `json:"pass"`
+}
+
+type loungeLogin struct {
+	loungeID int    `json:"Loungeid"`
+	pass     string `json:"Pass"`
 }
 
 func (u *passenger) getUser(db *sql.DB) error {
+
 	statement := fmt.Sprintf("SELECT email,name,country_code,mobile,tier_status FROM passenger_details WHERE ffn=%d", u.FFN)
 	return db.QueryRow(statement).Scan(&u.Email, &u.Name, &u.CountryCode, &u.Mobile, &u.TierStatus)
 }
 
+func (u *loungeLogin) getLoungeLogin(db *sql.DB) error {
+	statement := fmt.Sprintf("SELECT pass FROM lounge-login WHERE lounge_id=%d", u.loungeID)
+	return db.QueryRow(statement).Scan(&u.pass)
+}
+
 func (u *passenger) updateUser(db *sql.DB) error {
-	statement := fmt.Sprintf("UPDATE passenger_details SET name='%s', email='%s', country_code='%s', mobile='%s',tier_status='%s' WHERE ffn=%d", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, u.FFN)
+
+	statement := fmt.Sprintf("UPDATE passenger_details SET name='%s', email='%s', country_code='%s', mobile='%s',tier_status='%s',pass= '%s' WHERE ffn=%d", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, c, u.FFN)
 	_, err := db.Exec(statement)
 	return err
 }
@@ -31,7 +44,7 @@ func (u *passenger) deleteUser(db *sql.DB) error {
 	return err
 }
 func (u *passenger) createUser(db *sql.DB) error {
-	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status) VALUES('%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus)
+	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status,pass) VALUES('%s','%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus)
 	_, err := db.Exec(statement)
 	if err != nil {
 		return err
