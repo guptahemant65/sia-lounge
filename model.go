@@ -17,8 +17,8 @@ type passenger struct {
 }
 
 type loungeLogin struct {
-	loungeID int    `json:"Loungeid"`
-	pass     string `json:"Pass"`
+	LoungeID int    `json:"loungeid"`
+	Pass     string `json:"pass"`
 }
 
 func (u *passenger) getUser(db *sql.DB) error {
@@ -28,13 +28,13 @@ func (u *passenger) getUser(db *sql.DB) error {
 }
 
 func (u *loungeLogin) getLoungeLogin(db *sql.DB) error {
-	statement := fmt.Sprintf("SELECT pass FROM lounge-login WHERE lounge_id=%d", u.loungeID)
-	return db.QueryRow(statement).Scan(&u.pass)
+	statement := fmt.Sprintf("SELECT pass FROM lounge_login WHERE lounge_id=%d", u.LoungeID)
+	return db.QueryRow(statement).Scan(&u.Pass)
 }
 
 func (u *passenger) updateUser(db *sql.DB) error {
 
-	statement := fmt.Sprintf("UPDATE passenger_details SET name='%s', email='%s', country_code='%s', mobile='%s',tier_status='%s',pass= '%s' WHERE ffn=%d", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, c, u.FFN)
+	statement := fmt.Sprintf("UPDATE passenger_details SET name='%s', email='%s', country_code='%s', mobile='%s',tier_status='%s',pass= '%s' WHERE ffn=%d", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, u.Pass, u.FFN)
 	_, err := db.Exec(statement)
 	return err
 }

@@ -46,12 +46,12 @@ func (a *App) initializeRoutes() {
 
 func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	loungeID, err := strconv.Atoi(vars["loungeID"])
+	loungeid, err := strconv.Atoi(vars["loungeid"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Lounge ID")
 		return
 	}
-	u := loungeLogin{loungeID: loungeID}
+	u := loungeLogin{LoungeID: loungeid}
 	if err := u.getLoungeLogin(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
