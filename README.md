@@ -16,6 +16,7 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 **  Structure of passenger_details Table  **
 
 | Field Name   |  Data Type    | Extras                                 |
+| ------------ | ------------- | -------------------------------------- |            
 | ffn          |  INT(10)      | Primary Key, Not Null, Auto Increment  |
 | name         |  VARCHAR(45)  | Not Null                               |
 | email        |  VARCHAR(45)  | Not Null, Unique                       |
