@@ -15,13 +15,13 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 
 **Structure of passenger_details Table**
 
-| Field Name   |  Data Type    | Extras                                 |
-| ------------ | ------------- | -------------------------------------- |            
-| ffn          |  INT(10)      | Primary Key, Not Null, Auto Increment  |
-| name         |  VARCHAR(45)  | Not Null                               |
-| email        |  VARCHAR(45)  | Not Null, Unique                       |
-| country_code |  VARCHAR(45)  | Not Null, Unique                       |
-| mobile       |  VARCHAR(45)  | Not Null                               |
+| Field Name   |  Data Type                          |  Extras                                |
+| ------------ | -------------                       | -------------------------------------- |            
+| ffn          |  INT(10)                            | Primary Key, Not Null, Auto Increment  |
+| name         |  VARCHAR(45)                        | Not Null                               |
+| email        |  VARCHAR(45)                        | Not Null, Unique                       |
+| country_code |  VARCHAR(45)                        | Not Null, Unique                       |
+| mobile       |  VARCHAR(45)                        | Not Null                               |
+| tier_status  |  ENUM(gold,silver,platinum)         | Not Null                               |
 
 **NOTE :** Please don't input FFN while using POST Method of "/user" endpoint. 
-| tier_status  |  ENUM         | Not Null                               |
