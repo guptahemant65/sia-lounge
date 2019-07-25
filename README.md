@@ -1,8 +1,8 @@
 # Welcome to SIA Lounge API Documentation
 
-API URL : https://sia-lounge.herokuapp.com/
+API URL : https://sia-lounge.herokuapp.com
 
-Following endpoints are live : 
+### Following endpoints are live : 
 
 1. **"/users"**, Methods("GET") - to get all details of all passengers.
 2. **"/user"**, Methods("POST") -  to create a new user.
