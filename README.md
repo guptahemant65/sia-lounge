@@ -1,4 +1,4 @@
-## Welcome to SIA Lounge API Documentation
+# Welcome to SIA Lounge API Documentation
 
 API URL : https://sia-lounge.herokuapp.com/
 
@@ -9,11 +9,12 @@ Following endpoints are live :
 3. **"/user/[:ffn]"**, Methods("GET")
 4. **"/user/[:ffn]"**, Methods("PUT")
 5. **"/user/[:ffn]"**, Methods("DELETE")
+6. **"/loungelogin/[:lounge_id]"**, Methods("GET")
 
 
 Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 
-### Structure of passenger_details Table
+## Structure of passenger_details Table
 
 | Field Name   |  Data Type                          |  Extras                                |
 | ------------ | -------------                       | -------------------------------------- |            
@@ -26,3 +27,10 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 | pass         |  CHAR(76)                           |                                        |
 
 > Note : Please don't input FFN while using POST Method of "/user" endpoint. 
+
+## Structure of lounge_login Table
+
+| Field Name   |  Data Type                          |  Extras                                |
+| ------------ | -------------                       | -------------------------------------- |            
+| lounge_id    |  INT                                | Primary Key, Not Null, Auto Increment  |
+| pass         |  VARCHAR(45)                        | Not Null                               |
