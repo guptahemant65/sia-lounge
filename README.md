@@ -1,6 +1,6 @@
-"# sia-lounge" 
+**Welcome to SIA Lounge API Documentation**
 
-API Url : https://sia-lounge.herokuapp.com/
+API URL : https://sia-lounge.herokuapp.com/
 
 Following endpoints are live : 
 
