@@ -22,4 +22,6 @@ Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
 | email        |  VARCHAR(45)  | Not Null, Unique                       |
 | country_code |  VARCHAR(45)  | Not Null, Unique                       |
 | mobile       |  VARCHAR(45)  | Not Null                               |
+
+** NOTE : ** Please don't input FFN while using POST Method of "/user" endpoint. 
 | tier_status  |  ENUM         | Not Null                               |
