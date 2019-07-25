@@ -13,7 +13,7 @@ API URL : https://sia-lounge.herokuapp.com
 
 #### Sample Data to try out API : 
 
-* FFN(Frequent Flyer Number) : 100254, 140026
+* FFN(Frequent Flyer Number) : 100254, 140026, 42210002, 42210012
 * Lounge ID : 410002, 410012
 
 ## Structure of passenger_details Table
