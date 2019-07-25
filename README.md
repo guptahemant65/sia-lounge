@@ -11,8 +11,10 @@ Following endpoints are live :
 5. **"/user/[:ffn]"**, Methods("DELETE")
 6. **"/loungelogin/[:lounge_id]"**, Methods("GET")
 
+#### Sample Data to try out API : 
 
-Sample FFN(Frequent Flyer Number) to try out API : 100254, 140026
+* FFN(Frequent Flyer Number) : 100254, 140026
+* Lounge ID : 410002, 410012
 
 ## Structure of passenger_details Table
 
