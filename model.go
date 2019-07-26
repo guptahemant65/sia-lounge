@@ -42,7 +42,7 @@ func (u *passenger) getUser(db *sql.DB) error {
 
 func (u *passengerLogin) getUserLogin(db *sql.DB) error {
 
-	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d or mobile = %d", u.FFN, u.FFN)
+	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d", u.FFN)
 	return db.QueryRow(statement).Scan(&u.Result)
 }
 
