@@ -1,5 +1,5 @@
 {
-	"ImportPath": "App",
+	"ImportPath": "sia-lounge-backend",
 	"GoVersion": "go1.12",
 	"GodepVersion": "v80",
 	"Deps": [
@@ -12,6 +12,14 @@
 			"ImportPath": "github.com/gorilla/mux",
 			"Comment": "v1.7.3-1-gd83b6ff",
 			"Rev": "d83b6ffe499a29cc05fc977988d0392851779620"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "4def268fd1a49955bfb3dda92fe3db4f924f2285"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "4def268fd1a49955bfb3dda92fe3db4f924f2285"
 		}
 	]
 }
