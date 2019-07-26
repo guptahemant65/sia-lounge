@@ -167,6 +167,11 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
 	var u passengerLogin
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
 	err := bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(u.Result))
 
 	if err != nil {
@@ -174,11 +179,6 @@ func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	if err = decoder.Decode(&u); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
 	defer r.Body.Close()
 	if err := u.getUserLogin(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
