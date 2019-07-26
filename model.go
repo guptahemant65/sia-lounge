@@ -4,6 +4,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type passenger struct {
@@ -14,6 +16,11 @@ type passenger struct {
 	Mobile      string `json:"mobile"`
 	TierStatus  string `json:"tier_status"`
 	Pass        string `json:"pass"`
+}
+
+type ResponseResult struct {
+	Error  string `json:"error"`
+	Result string `json:"result"`
 }
 
 type loungeLogin struct {
@@ -44,8 +51,10 @@ func (u *passenger) deleteUser(db *sql.DB) error {
 	return err
 }
 func (u *passenger) createUser(db *sql.DB) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Pass), 5)
+	u.Pass = string(hash)
 	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status,pass) VALUES('%s','%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, u.Pass)
-	_, err := db.Exec(statement)
+	_, err = db.Exec(statement)
 	if err != nil {
 		return err
 	}
