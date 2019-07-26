@@ -18,6 +18,12 @@ type passenger struct {
 	Pass        string `json:"pass"`
 }
 
+type passengerLogin struct {
+	FFN    int    `json:"ffn"`
+	Pass   string `json:"pass"`
+	Result string `json:"result"`
+}
+
 type ResponseResult struct {
 	Error  string `json:"error"`
 	Result string `json:"result"`
@@ -32,6 +38,12 @@ func (u *passenger) getUser(db *sql.DB) error {
 
 	statement := fmt.Sprintf("SELECT email,name,country_code,mobile,tier_status FROM passenger_details WHERE ffn=%d", u.FFN)
 	return db.QueryRow(statement).Scan(&u.Email, &u.Name, &u.CountryCode, &u.Mobile, &u.TierStatus)
+}
+
+func (u *passengerLogin) getUserLogin(db *sql.DB) error {
+
+	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d or mobile = %d", u.FFN, u.FFN)
+	return db.QueryRow(statement).Scan(&u.Result)
 }
 
 func (u *loungeLogin) getLoungeLogin(db *sql.DB) error {

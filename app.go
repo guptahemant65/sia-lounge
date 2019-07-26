@@ -12,6 +12,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type App struct {
@@ -40,6 +41,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.getUser).Methods("GET")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.updateUser).Methods("PUT")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.deleteUser).Methods("DELETE")
+	a.Router.HandleFunc("/userlogin/{ffn:[0-9]+}", a.getUserLogin).Methods("POST")
 	//lounge-login
 	a.Router.HandleFunc("/loungelogin/{loungeid:[0-9]+}", a.getLoungeLogin).Methods("GET")
 }
@@ -161,4 +163,26 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
+	var u passengerLogin
+	err := bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(u.Result))
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid password")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.getUserLogin(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success"})
 }
