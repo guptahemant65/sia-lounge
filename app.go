@@ -168,7 +168,7 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
 	var u passengerLogin
 	decoder := json.NewDecoder(r.Body)
-	if err = decoder.Decode(&u); err != nil {
+	if err := decoder.Decode(&u); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
