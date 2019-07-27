@@ -18,15 +18,9 @@ type passenger struct {
 	Pass        string `json:"pass"`
 }
 
-type passengerLogin struct {
-	FFN    int    `json:"ffn"`
-	Pass   string `json:"pass"`
-	Result string `json:"result"`
-}
-
-type ResponseResult struct {
-	Error  string `json:"error"`
-	Result string `json:"result"`
+type plogin struct {
+	FFN  int    `json:"ffn"`
+	Pass []byte `json:"pass"`
 }
 
 type loungeLogin struct {
@@ -40,14 +34,15 @@ func (u *passenger) getUser(db *sql.DB) error {
 	return db.QueryRow(statement).Scan(&u.Email, &u.Name, &u.CountryCode, &u.Mobile, &u.TierStatus)
 }
 
-func (u *passengerLogin) getUserLogin(db *sql.DB) error {
-
-	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d", u.FFN)
-	return db.QueryRow(statement).Scan(&u.Result)
-}
-
 func (u *loungeLogin) getLoungeLogin(db *sql.DB) error {
 	statement := fmt.Sprintf("SELECT pass FROM lounge_login WHERE lounge_id=%d", u.LoungeID)
+	fmt.Println(u.Pass)
+	return db.QueryRow(statement).Scan(&u.Pass)
+
+}
+
+func (u *plogin) getUserLogin(db *sql.DB) error {
+	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d", u.FFN)
 	return db.QueryRow(statement).Scan(&u.Pass)
 }
 
@@ -63,7 +58,7 @@ func (u *passenger) deleteUser(db *sql.DB) error {
 	return err
 }
 func (u *passenger) createUser(db *sql.DB) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(u.Pass), 5)
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Pass), bcrypt.DefaultCost)
 	u.Pass = string(hash)
 	statement := fmt.Sprintf("INSERT INTO passenger_details(name,email,country_code,mobile,tier_status,pass) VALUES('%s','%s','%s','%s','%s','%s')", u.Name, u.Email, u.CountryCode, u.Mobile, u.TierStatus, u.Pass)
 	_, err = db.Exec(statement)

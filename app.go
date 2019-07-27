@@ -19,6 +19,10 @@ type App struct {
 	Router *mux.Router
 	DB     *sql.DB
 }
+type statusRes struct {
+	Status int    `json:"status"`
+	Msg    string `json:"msg"`
+}
 
 func (a *App) Initialize(user, password, dbname string) {
 	connectionString := fmt.Sprintf("%s:%s@tcp(us-cdbr-iron-east-02.cleardb.net:3306)/%s", user, password, dbname)
@@ -44,6 +48,33 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/userlogin", a.getUserLogin).Methods("POST")
 	//lounge-login
 	a.Router.HandleFunc("/loungelogin/{loungeid:[0-9]+}", a.getLoungeLogin).Methods("GET")
+}
+
+func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var t loungeLogin
+	err := decoder.Decode(&t)
+	if err != nil {
+		panic(err)
+	}
+	var u plogin
+
+	//deskripsi dan compare password
+	var passwordtes = bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(t.Pass))
+	fmt.Println(string(u.Pass))
+	fmt.Println(string(t.Pass))
+	fmt.Println(passwordtes)
+	if passwordtes == nil {
+		//login success
+
+		res := statusRes{Status: 200, Msg: "success"}
+		json.NewEncoder(w).Encode(res)
+	} else {
+		//login failed
+		res := statusRes{Status: 400, Msg: "fail"}
+		json.NewEncoder(w).Encode(res)
+	}
+
 }
 
 func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
@@ -163,26 +194,4 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)
-}
-
-func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
-	var u passengerLogin
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&u); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	err := bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(u.Result))
-
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid password")
-		return
-	}
-
-	defer r.Body.Close()
-	if err := u.getUserLogin(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success"})
 }
