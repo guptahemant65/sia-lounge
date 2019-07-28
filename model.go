@@ -117,3 +117,21 @@ func (u *loginlounge) createLoungeLogin(db *sql.DB) error {
 	}
 	return nil
 }
+
+// GET LOUNGE BOOKING DETAILS
+
+type loungebooking struct {
+	BookingID string   `json:"ticket_id"`
+	FFN       string   `json:"ffn"`
+	Num       string   `json:"nos"`
+	Names     []string `json:"names"`
+	Checkin   string   `json:"checkin"`
+	Checkout  string   `json:"checkout"`
+	PNR       string   `json:"pnr"`
+}
+
+func (u *loungebooking) getlounge(db *sql.DB) error {
+
+	statement := fmt.Sprintf("SELECT ffn,nos,names,checkin,checkout,pnr FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
+	return db.QueryRow(statement).Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR)
+}
