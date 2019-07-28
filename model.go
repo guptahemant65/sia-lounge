@@ -133,12 +133,12 @@ type loungebooking struct {
 
 func (u *loungebooking) getloungebooking(db *sql.DB) error {
 
-	statement := fmt.Sprintf("SELECT ffn,nos,names,checkin,checkout,pnr,status FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
+	statement := fmt.Sprintf("SELECT ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
 	return db.QueryRow(statement).Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status)
 }
 
 func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
-	statement := fmt.Sprintf("SELECT ticket_id,ffn,nos,names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && date = CURDATE() ")
+	statement := fmt.Sprintf("SELECT ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && date = CURDATE() ")
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err

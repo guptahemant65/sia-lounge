@@ -45,13 +45,13 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.getUser).Methods("GET")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.updateUser).Methods("PUT")
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.deleteUser).Methods("DELETE")
-	a.Router.HandleFunc("/userlogin", a.getUserLogin).Methods("POST")
+	a.Router.HandleFunc("/userLogin", a.getUserLogin).Methods("POST")
 	//lounge-login
-	a.Router.HandleFunc("/loungelogin", a.getLoungeLogin).Methods("POST")
-	a.Router.HandleFunc("/createloungelogin", a.createLoungeLogin).Methods("POST")
+	a.Router.HandleFunc("/loungeLogin", a.getLoungeLogin).Methods("POST")
+	a.Router.HandleFunc("/createLoungeLogin", a.createLoungeLogin).Methods("POST")
 	//lounge-booking-get
-	a.Router.HandleFunc("/getlounge/{ticket_id}", a.getloungebooking).Methods("GET")
-	a.Router.HandleFunc("/getlounge", a.getloungebookings).Methods("GET")
+	a.Router.HandleFunc("/getLounge/{ticket_id}", a.getloungebooking).Methods("GET")
+	a.Router.HandleFunc("/getLoungeBookings", a.getloungebookings).Methods("GET")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {

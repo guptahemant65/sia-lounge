@@ -4,13 +4,20 @@ API URL : https://sia-lounge.herokuapp.com
 
 ### Following endpoints are live : 
 
+#### For Client-side App
+
 1. **"/users"**, Methods("GET") - to get all details of all passengers.
 2. **"/user"**, Methods("POST") -  to create a new user.
 3. **"/user/[:ffn]"**, Methods("GET") - to get details of specific passenger through FFN.
 4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
 5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
-6. **"/loungelogin"**, Methods("POST") - to authenticate the lounge login credentials.
-7. **"/getlounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
+
+#### For Lounge Management App
+
+1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials.
+2. **"/getLounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
+3. **"/getLoungeBookings"**, Methods("GET") - to get the all the Lounge Bookings (which are not checked-out yet) on present date. 
+
 
 #### Sample Data to try out API : 
 
@@ -44,11 +51,13 @@ API URL : https://sia-lounge.herokuapp.com
 | ------------               | ------------------                  | -------------------------------------- |            
 | ticket_id                  |  VARCHAR(60)                        | Primary Key, Not Null                  |
 | ffn                        |  VARCHAR(45)                        | Not Null                               |
-| nos (no of guests)         |  INT(2)                             | Not Null                               |
-| Names                      |  VARCHAR                            | Not Null                               |
+| no_of_guests               |  INT(2)                             | Not Null                               |
+| guest_names                |  VARCHAR                            | Not Null                               |
 | checkin                    |  TIMESTAMP                          |                                        |
 | checkout                   |  TIMESTAMP                          |                                        |
 | pnr (Flight Ticket ID)     |  VARCHAR                            | Not Null                               |
+| status                     | ENUM (CONFIRMED, IN PROGRESS, COMPLETED) | Not Null                          |
+| date                       | DATE                                | Not Null                               |
 
 
 
