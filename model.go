@@ -128,16 +128,17 @@ type loungebooking struct {
 	Checkin   string `json:"checkin"`
 	Checkout  string `json:"checkout"`
 	PNR       string `json:"pnr"`
+	Status    string `json:"status"`
 }
 
 func (u *loungebooking) getloungebooking(db *sql.DB) error {
 
-	statement := fmt.Sprintf("SELECT ffn,nos,names,checkin,checkout,pnr FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
-	return db.QueryRow(statement).Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR)
+	statement := fmt.Sprintf("SELECT ffn,nos,names,checkin,checkout,pnr,status FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
+	return db.QueryRow(statement).Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status)
 }
 
 func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
-	statement := fmt.Sprintf("SELECT ticket_id,ffn,nos,names,checkin,checkout,pnr FROM lounge_booking where status != 'completed' && date = CURDATE() ")
+	statement := fmt.Sprintf("SELECT ticket_id,ffn,nos,names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && date = CURDATE() ")
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
@@ -146,7 +147,7 @@ func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
 	loungebookings := []loungebooking{}
 	for rows.Next() {
 		var u loungebooking
-		if err := rows.Scan(u.BookingID, &u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR); err != nil {
+		if err := rows.Scan(&u.BookingID, &u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status); err != nil {
 			return nil, err
 		}
 		loungebookings = append(loungebookings, u)
