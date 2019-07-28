@@ -9,7 +9,8 @@ API URL : https://sia-lounge.herokuapp.com
 3. **"/user/[:ffn]"**, Methods("GET") - to get details of specific passenger through FFN.
 4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
 5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
-6. **"/loungelogin/[:lounge_id]"**, Methods("GET") - to get login credentials of lounge through Lounge ID.
+6. **"/loungelogin"**, Methods("POST") - to authenticate the lounge login credentials.
+7. **"/getlounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
 
 #### Sample Data to try out API : 
 
@@ -28,7 +29,7 @@ API URL : https://sia-lounge.herokuapp.com
 | tier_status  |  ENUM(gold,silver,platinum)         | Not Null                               |
 | pass         |  VARCHAR(30)                        | Not Null                               |
 
-> Note : Please don't input FFN while using POST Method of "/user" endpoint. 
+> Note : Please don't input FFN while using POST Method of "/user" endpoint.  
 
 ## Structure of lounge_login Table
 
@@ -36,3 +37,18 @@ API URL : https://sia-lounge.herokuapp.com
 | ------------ | -------------                       | -------------------------------------- |            
 | lounge_id    |  INT                                | Primary Key, Not Null, Auto Increment  |
 | pass         |  VARCHAR(45)                        | Not Null                               |
+
+## Structure of lounge_booking Table
+
+| Field Name (description)   |  Data Type                          |  Extras                                |
+| ------------               | ------------------                  | -------------------------------------- |            
+| ticket_id                  |  VARCHAR(60)                        | Primary Key, Not Null                  |
+| ffn                        |  VARCHAR(45)                        | Not Null                               |
+| nos (no of guests)         |  INT(2)                             | Not Null                               |
+| Names                      |  VARCHAR                            | Not Null                               |
+| checkin                    |  TIMESTAMP                          |                                        |
+| checkout                   |  TIMESTAMP                          |                                        |
+| pnr (Flight Ticket ID)     |  VARCHAR                            | Not Null                               |
+
+
+
