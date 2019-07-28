@@ -121,13 +121,13 @@ func (u *loginlounge) createLoungeLogin(db *sql.DB) error {
 // GET LOUNGE BOOKING DETAILS
 
 type loungebooking struct {
-	BookingID string   `json:"ticket_id"`
-	FFN       string   `json:"ffn"`
-	Num       string   `json:"nos"`
-	Names     []string `json:"names"`
-	Checkin   string   `json:"checkin"`
-	Checkout  string   `json:"checkout"`
-	PNR       string   `json:"pnr"`
+	BookingID string `json:"ticket_id"`
+	FFN       string `json:"ffn"`
+	Num       string `json:"nos"`
+	Names     string `json:"names"`
+	Checkin   string `json:"checkin"`
+	Checkout  string `json:"checkout"`
+	PNR       string `json:"pnr"`
 }
 
 func (u *loungebooking) getlounge(db *sql.DB) error {
