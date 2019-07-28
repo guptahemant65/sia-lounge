@@ -169,15 +169,12 @@ func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
 
 func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
 	rand.Seed(time.Now().UnixNano())
-
-	statement := fmt.Sprintf("INSERT INTO lounge_booking(ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status) VALUES('%s','%s','%s','%s','%s','%s','%s','%s')", randSeq(25), u.FFN, u.Num, u.Names, u.Checkin, u.Checkout, u.PNR, u.Status)
+	u.BookingID = randSeq(25)
+	statement := fmt.Sprintf("INSERT INTO lounge_booking(ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status) VALUES('%s','%s','%s','%s','%s','%s','%s','%s')", u.BookingID, u.FFN, u.Num, u.Names, u.Checkin, u.Checkout, u.PNR, u.Status)
 	_, err := db.Exec(statement)
 	if err != nil {
 		return err
 	}
-	err = db.QueryRow("SELECT LAST_INSERT_ID()").Scan(&u.BookingID)
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
