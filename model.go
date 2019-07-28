@@ -18,13 +18,28 @@ type passenger struct {
 	Pass        string `json:"pass"`
 }
 
-type plogin struct {
-	FFN  int    `json:"ffn"`
+type dblogin struct {
+	FFN  string `json:"ffn"`
 	Pass []byte `json:"pass"`
 }
 
-type loungeLogin struct {
-	LoungeID int    `json:"loungeid"`
+type reqlogin struct {
+	FFN  string `json:"ffn"`
+	Pass string `json:"pass"`
+}
+
+type loginlounge struct {
+	Loungeid string `json:"lounge_id"`
+	Pass     string `json:"pass"`
+}
+
+type dbloginlounge struct {
+	Loungeid string `json:"lounge_id"`
+	Pass     []byte `json:"pass"`
+}
+
+type reqloginlounge struct {
+	Loungeid string `json:"lounge_id"`
 	Pass     string `json:"pass"`
 }
 
@@ -34,15 +49,14 @@ func (u *passenger) getUser(db *sql.DB) error {
 	return db.QueryRow(statement).Scan(&u.Email, &u.Name, &u.CountryCode, &u.Mobile, &u.TierStatus)
 }
 
-func (u *loungeLogin) getLoungeLogin(db *sql.DB) error {
-	statement := fmt.Sprintf("SELECT pass FROM lounge_login WHERE lounge_id=%d", u.LoungeID)
-	fmt.Println(u.Pass)
+func (u *dbloginlounge) getLoungeLogin(db *sql.DB) error {
+	statement := fmt.Sprintf("SELECT pass FROM lounge_login WHERE lounge_id='%s'", u.Loungeid)
 	return db.QueryRow(statement).Scan(&u.Pass)
 
 }
 
-func (u *plogin) getUserLogin(db *sql.DB) error {
-	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn=%d", u.FFN)
+func (u *dblogin) getUserLogin(db *sql.DB) error {
+	statement := fmt.Sprintf("SELECT pass FROM passenger_details WHERE ffn='%s'", u.FFN)
 	return db.QueryRow(statement).Scan(&u.Pass)
 }
 
@@ -87,4 +101,19 @@ func getUsers(db *sql.DB, start, count int) ([]passenger, error) {
 		users = append(users, u)
 	}
 	return users, nil
+}
+
+func (u *loginlounge) createLoungeLogin(db *sql.DB) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Pass), bcrypt.DefaultCost)
+	u.Pass = string(hash)
+	statement := fmt.Sprintf("INSERT INTO lounge_login(pass) VALUES('%s')", u.Pass)
+	_, err = db.Exec(statement)
+	if err != nil {
+		return err
+	}
+	err = db.QueryRow("SELECT LAST_INSERT_ID()").Scan(&u.Loungeid)
+	if err != nil {
+		return err
+	}
+	return nil
 }

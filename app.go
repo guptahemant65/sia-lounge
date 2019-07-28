@@ -21,7 +21,7 @@ type App struct {
 }
 type statusRes struct {
 	Status int    `json:"status"`
-	Msg    string `json:"msg"`
+	Result string `json:"result"`
 }
 
 func (a *App) Initialize(user, password, dbname string) {
@@ -47,54 +47,47 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/user/{ffn:[0-9]+}", a.deleteUser).Methods("DELETE")
 	a.Router.HandleFunc("/userlogin", a.getUserLogin).Methods("POST")
 	//lounge-login
-	a.Router.HandleFunc("/loungelogin/{loungeid:[0-9]+}", a.getLoungeLogin).Methods("GET")
+	a.Router.HandleFunc("/loungelogin", a.getLoungeLogin).Methods("POST")
+	a.Router.HandleFunc("/createloungelogin", a.createLoungeLogin).Methods("POST")
+
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var t loungeLogin
+	var t reqlogin
 	err := decoder.Decode(&t)
 	if err != nil {
 		panic(err)
 	}
-	var u plogin
 
-	//deskripsi dan compare password
-	var passwordtes = bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(t.Pass))
-	fmt.Println(string(u.Pass))
-	fmt.Println(string(t.Pass))
-	fmt.Println(passwordtes)
-	if passwordtes == nil {
-		//login success
-
-		res := statusRes{Status: 200, Msg: "success"}
-		json.NewEncoder(w).Encode(res)
-	} else {
-		//login failed
-		res := statusRes{Status: 400, Msg: "fail"}
-		json.NewEncoder(w).Encode(res)
-	}
-
-}
-
-func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	loungeid, err := strconv.Atoi(vars["loungeid"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Lounge ID")
-		return
-	}
-	u := loungeLogin{LoungeID: loungeid}
-	if err := u.getLoungeLogin(a.DB); err != nil {
+	ffn := string(t.FFN)
+	u := dblogin{FFN: ffn}
+	if err := u.getUserLogin(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Lounge not found")
+			respondWithError(w, http.StatusNotFound, "Passenger not found")
 		default:
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
-	respondWithJSON(w, http.StatusOK, u)
+
+	// compare password
+	var passwordtes = bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(t.Pass))
+
+	fmt.Println(string(t.Pass))
+	fmt.Println(passwordtes)
+	if passwordtes == nil {
+		//login success
+
+		res := statusRes{Status: 200, Result: "success"}
+		json.NewEncoder(w).Encode(res)
+	} else {
+		//login failed
+		res := statusRes{Status: 400, Result: "fail"}
+		json.NewEncoder(w).Encode(res)
+	}
+
 }
 
 func (a *App) getUser(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +164,7 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, u)
+	respondWithJSON(w, http.StatusCreated, u.FFN)
 }
 
 func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
@@ -194,4 +187,59 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (a *App) getLoungeLogin(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var t reqloginlounge
+	err := decoder.Decode(&t)
+	if err != nil {
+		panic(err)
+	}
+
+	loungeid := string(t.Loungeid)
+	fmt.Println(loungeid)
+	u := dbloginlounge{Loungeid: loungeid}
+	if err := u.getLoungeLogin(a.DB); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			res := statusRes{Status: 401, Result: "Lounge not found"}
+			json.NewEncoder(w).Encode(res)
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	// compare password
+	var passwordtes = bcrypt.CompareHashAndPassword([]byte(u.Pass), []byte(t.Pass))
+
+	fmt.Println(string(t.Pass))
+	fmt.Println(passwordtes)
+	if passwordtes == nil {
+		//login success
+
+		res := statusRes{Status: 200, Result: "Success"}
+		json.NewEncoder(w).Encode(res)
+	} else {
+		//login failed
+		res := statusRes{Status: 400, Result: "Failed"}
+		json.NewEncoder(w).Encode(res)
+	}
+
+}
+
+func (a *App) createLoungeLogin(w http.ResponseWriter, r *http.Request) {
+	var u loginlounge
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.createLoungeLogin(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, u.Loungeid)
 }
