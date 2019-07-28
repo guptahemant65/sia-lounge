@@ -11,6 +11,8 @@ API URL : https://sia-lounge.herokuapp.com
 3. **"/user/[:ffn]"**, Methods("GET") - to get details of specific passenger through FFN.
 4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
 5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
+6. **"/userLogin"**, Methods("POST") - to authenticate the guest login credentials.
+7. **"/createLoungeBooking"**, Methods("POST") - to create a new lounge booking.
 
 * #### For Lounge Management App
 
@@ -40,10 +42,10 @@ API URL : https://sia-lounge.herokuapp.com
 
 ## Structure of lounge_login Table
 
-| Field Name   |  Data Type                          |  Extras                                |
-| ------------ | -------------                       | -------------------------------------- |            
-| lounge_id    |  INT                                | Primary Key, Not Null, Auto Increment  |
-| pass         |  VARCHAR(45)                        | Not Null                               |
+| Field Name   |  Data Type                      |  Extras                                |
+| ------------ | -------------                   | -------------------------------------- |            
+| lounge_id    |  INT                            | Primary Key, Not Null, Auto Increment  |
+| pass         |  VARCHAR(45)                    | Not Null                               |
 
 ## Structure of lounge_booking Table
 
@@ -57,7 +59,9 @@ API URL : https://sia-lounge.herokuapp.com
 | checkout                   |  TIMESTAMP                          |                                        |
 | pnr (Flight Ticket ID)     |  VARCHAR                            | Not Null                               |
 | status                     | ENUM (CONFIRMED, IN PROGRESS, COMPLETED) | Not Null                          |
-| date                       | DATE                                | Not Null                               |
+
+
+> Note : Please don't input ticket_id (as it's auto-generated) while using POST Method of "/createLoungeBooking" endpoint.  
 
 
 

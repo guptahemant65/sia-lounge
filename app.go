@@ -49,9 +49,10 @@ func (a *App) initializeRoutes() {
 	//lounge-login
 	a.Router.HandleFunc("/loungeLogin", a.getLoungeLogin).Methods("POST")
 	a.Router.HandleFunc("/createLoungeLogin", a.createLoungeLogin).Methods("POST")
-	//lounge-booking-get
+	//lounge-booking-get-create
 	a.Router.HandleFunc("/getLounge/{ticket_id}", a.getloungebooking).Methods("GET")
 	a.Router.HandleFunc("/getLoungeBookings", a.getloungebookings).Methods("GET")
+	a.Router.HandleFunc("/createLoungeBooking", a.createloungebooking).Methods("POST")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
@@ -280,4 +281,19 @@ func (a *App) getloungebookings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, loungebookings)
+}
+
+func (a *App) createLoungeBooking(w http.ResponseWriter, r *http.Request) {
+	var u loungebooking
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.createLoungeBooking(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, u.BookingID)
 }

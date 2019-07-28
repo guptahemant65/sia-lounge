@@ -4,9 +4,21 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math/rand"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+func randSeq(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
 
 type passenger struct {
 	FFN         int    `json:"ffn"`
@@ -123,8 +135,8 @@ func (u *loginlounge) createLoungeLogin(db *sql.DB) error {
 type loungebooking struct {
 	BookingID string `json:"ticket_id"`
 	FFN       string `json:"ffn"`
-	Num       string `json:"nos"`
-	Names     string `json:"names"`
+	Num       string `json:"no_of_guests"`
+	Names     string `json:"guest_names"`
 	Checkin   string `json:"checkin"`
 	Checkout  string `json:"checkout"`
 	PNR       string `json:"pnr"`
@@ -138,7 +150,7 @@ func (u *loungebooking) getloungebooking(db *sql.DB) error {
 }
 
 func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
-	statement := fmt.Sprintf("SELECT ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && date = CURDATE() ")
+	statement := fmt.Sprintf("SELECT ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && TIMESTAMPDIFF(HOUR,checkin,CONVERT_TZ( current_timestamp(),'GMT','+08:00' ))<=12 ")
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
@@ -153,4 +165,19 @@ func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
 		loungebookings = append(loungebookings, u)
 	}
 	return loungebookings, nil
+}
+
+func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
+	rand.Seed(time.Now().UnixNano())
+
+	statement := fmt.Sprintf("INSERT INTO lounge_booking(ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status) VALUES('%s','%s','%s','%s','%s','%s','%s','%s')", randSeq(25), u.FFN, u.Num, u.Names, u.Checkin, u.Checkout, u.PNR, u.Status)
+	_, err := db.Exec(statement)
+	if err != nil {
+		return err
+	}
+	err = db.QueryRow("SELECT LAST_INSERT_ID()").Scan(&u.BookingID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
