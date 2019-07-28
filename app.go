@@ -50,7 +50,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/loungelogin", a.getLoungeLogin).Methods("POST")
 	a.Router.HandleFunc("/createloungelogin", a.createLoungeLogin).Methods("POST")
 	//lounge-booking-get
-	a.Router.HandleFunc("/getlounge/{ticket_id}", a.getlounge).Methods("GET")
+	a.Router.HandleFunc("/getlounge/{ticket_id}", a.getloungebooking).Methods("GET")
+	a.Router.HandleFunc("/getlounge", a.getloungebookings).Methods("GET")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
@@ -247,12 +248,12 @@ func (a *App) createLoungeLogin(w http.ResponseWriter, r *http.Request) {
 
 //get lounge booking details
 
-func (a *App) getlounge(w http.ResponseWriter, r *http.Request) {
+func (a *App) getloungebooking(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ticketid := vars["ticket_id"]
 
 	u := loungebooking{BookingID: ticketid}
-	if err := u.getlounge(a.DB); err != nil {
+	if err := u.getloungebooking(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Booking ID not found in our database.")
@@ -262,4 +263,21 @@ func (a *App) getlounge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (a *App) getloungebookings(w http.ResponseWriter, r *http.Request) {
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+	if count > 10 || count < 1 {
+		count = 10
+	}
+	if start < 0 {
+		start = 0
+	}
+	loungebookings, err := getloungebookings(a.DB, start, count)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, loungebookings)
 }
