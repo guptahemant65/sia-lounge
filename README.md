@@ -4,7 +4,7 @@ API URL : https://sia-lounge.herokuapp.com
 
 ### Following endpoints are live : 
 
-#### For Client-side App
+* #### For Client-side App
 
 1. **"/users"**, Methods("GET") - to get all details of all passengers.
 2. **"/user"**, Methods("POST") -  to create a new user.
@@ -12,7 +12,7 @@ API URL : https://sia-lounge.herokuapp.com
 4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
 5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
 
-#### For Lounge Management App
+* #### For Lounge Management App
 
 1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials.
 2. **"/getLounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
