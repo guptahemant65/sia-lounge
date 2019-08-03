@@ -182,17 +182,16 @@ func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
 type loungedetails struct {
 	LoungeID            string `json:"lounge_id"`
 	LoungeName          string `json:"lounge_name"`
-	TotalCapacity       string `json:"total-capacity"`
 	Amenities           string `json:"amenities"`
 	Price               string `json:"price"`
-	AcceptedCards       string `json:"accepted-cards"`
-	PrivateRoomCapacity string `json:"private-room-capacity"`
-	SofaCapacity        string `json:"sofa-capacity"`
+	AcceptedCards       string `json:"accepted_cards"`
+	PrivateRoomCapacity string `json:"private_room_capacity"`
+	SofaCapacity        string `json:"sofa_capacity"`
 	Location            string `json:"location"`
 }
 
 func (u *loungedetails) getLoungeDetails(db *sql.DB) error {
 
-	statement := fmt.Sprintf("SELECT lounge_name,total-capacity,amenities,price,accepted-cards,private-room-capacity,sofa-capacity,location FROM lounge_details WHERE lounge_id='%s'", u.LoungeID)
-	return db.QueryRow(statement).Scan(&u.LoungeName, &u.TotalCapacity, &u.Amenities, &u.Price, &u.AcceptedCards, &u.PrivateRoomCapacity, &u.SofaCapacity, &u.Location)
+	statement := fmt.Sprintf("SELECT lounge_name,amenities,price,accepted_cards,private_room_capacity,sofa_capacity,location FROM lounge_details WHERE lounge_id='%s'", u.LoungeID)
+	return db.QueryRow(statement).Scan(&u.LoungeName, &u.Amenities, &u.Price, &u.AcceptedCards, &u.PrivateRoomCapacity, &u.SofaCapacity, &u.Location)
 }
