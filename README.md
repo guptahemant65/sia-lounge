@@ -19,6 +19,7 @@ API URL : https://sia-lounge.herokuapp.com
 1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials.
 2. **"/getLounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
 3. **"/getLoungeBookings"**, Methods("GET") - to get the all the Lounge Bookings (which are not checked-out yet) on present date. 
+4. **"/getLoungeDetails/[:lounge_id]"**, Methods("GET") - to get the the Lounge Details.
 
 
 #### Sample Data to try out API : 
@@ -49,19 +50,34 @@ API URL : https://sia-lounge.herokuapp.com
 
 ## Structure of lounge_booking Table
 
-| Field Name (description)   |  Data Type                          |  Extras                                |
-| ------------               | ------------------                  | -------------------------------------- |            
-| ticket_id                  |  VARCHAR(60)                        | Primary Key, Not Null                  |
-| ffn                        |  VARCHAR(45)                        | Not Null                               |
-| no_of_guests               |  INT(2)                             | Not Null                               |
-| guest_names                |  VARCHAR                            | Not Null                               |
-| checkin                    |  TIMESTAMP                          |                                        |
-| checkout                   |  TIMESTAMP                          |                                        |
-| pnr (Flight Ticket ID)     |  VARCHAR                            | Not Null                               |
-| status                     | ENUM (CONFIRMED, IN PROGRESS, COMPLETED) | Not Null                          |
+| Field Name (description)   |  Data Type                               |  Extras                                |
+| -------------------------- | ---------------------------------------  | -------------------------------------- |            
+| ticket_id                  |  VARCHAR(60)                             | Primary Key, Not Null                  |
+| ffn                        |  VARCHAR(45)                             | Not Null                               |
+| no_of_guests               |  INT(2)                                  | Not Null                               |
+| guest_names                |  VARCHAR                                 | Not Null                               |
+| checkin                    |  TIMESTAMP                               |                                        |
+| checkout                   |  TIMESTAMP                               |                                        |
+| pnr (Flight Ticket ID)     |  VARCHAR                                 | Not Null                               |
+| status                     | ENUM (CONFIRMED, IN PROGRESS, COMPLETED) | Not Null                               |
+| payment-method             | VARCHAR                                  | Not Null                               |
+| amount-paid                | INT                                      | Not Null                               |
 
 
 > Note : Please don't input ticket_id (as it's auto-generated) while using POST Method of "/createLoungeBooking" endpoint.  
 
+## Structure of lounge_details Table
+
+| Field Name (description)   |  Data Type                          |  Extras                                |
+| ------------               | ------------------                  | -------------------------------------- |  
+| lounge_id                  | INT(11)                             | Not Null,Primary Key                   |
+| lounge_name                | VARCHAR(45)                         | Not Null                               |
+| total-capacity             | INT(3)                              | Not Null                               |
+| amenities                  | VARCHAR(120)                        | Not Null                               |
+| price                      | INT(4)                              | Not Null                               |
+|accepted-cards              | VARCHAR(150)                        | Not Null                               |
+| private-room-capacity      | INT(2)                              | Not Null                               |
+| sofa-capacity              | INT(3)                              | Not Null                               |
+| location                   | VARCHAR(45)                         | Not Null                               |
 
 

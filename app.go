@@ -53,6 +53,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/getLounge/{ticket_id}", a.getloungebooking).Methods("GET")
 	a.Router.HandleFunc("/getLoungeBookings", a.getloungebookings).Methods("GET")
 	a.Router.HandleFunc("/createLoungeBooking", a.createLoungeBooking).Methods("POST")
+	a.Router.HandleFunc("/getLoungeDetails/{lounge_id:[0-9]+}", a.getLoungeDetails).Methods("GET")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
@@ -296,4 +297,21 @@ func (a *App) createLoungeBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusCreated, u.BookingID)
+}
+
+func (a *App) getLoungeDetails(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	loungeid := vars["lounge_id"]
+
+	u := loungedetails{LoungeID: loungeid}
+	if err := u.getLoungeDetails(a.DB); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			respondWithError(w, http.StatusNotFound, "Lounge Detail not found.")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+	respondWithJSON(w, http.StatusOK, u)
 }
