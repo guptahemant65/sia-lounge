@@ -50,7 +50,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/loungeLogin", a.getLoungeLogin).Methods("POST")
 	a.Router.HandleFunc("/createLoungeLogin", a.createLoungeLogin).Methods("POST")
 	//lounge-booking-get-create
-	a.Router.HandleFunc("/getLounge/{ticket_id}", a.getloungebooking).Methods("GET")
+	a.Router.HandleFunc("/getLoungeBooking/{ticket_id}", a.getloungebooking).Methods("GET")
 	a.Router.HandleFunc("/getLoungeBookings", a.getloungebookings).Methods("GET")
 	a.Router.HandleFunc("/createLoungeBooking", a.createLoungeBooking).Methods("POST")
 	a.Router.HandleFunc("/getLoungeDetails/{lounge_id:[0-9]+}", a.getLoungeDetails).Methods("GET")
