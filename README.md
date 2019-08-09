@@ -60,8 +60,8 @@ API URL : https://sia-lounge.herokuapp.com
 | checkout                   |  TIMESTAMP                               |                                        |
 | pnr (Flight Ticket ID)     |  VARCHAR                                 | Not Null                               |
 | status                     | ENUM (CONFIRMED, IN PROGRESS, COMPLETED) | Not Null                               |
-| payment-method             | VARCHAR                                  | Not Null                               |
-| amount-paid                | INT                                      | Not Null                               |
+| payment_method             | VARCHAR                                  | Not Null                               |
+| amount_paid                | INT                                      | Not Null                               |
 
 
 > Note : Please don't input ticket_id (as it's auto-generated) while using POST Method of "/createLoungeBooking" endpoint.  
@@ -72,12 +72,12 @@ API URL : https://sia-lounge.herokuapp.com
 | ------------               | ------------------                  | -------------------------------------- |  
 | lounge_id                  | INT(11)                             | Not Null,Primary Key                   |
 | lounge_name                | VARCHAR(45)                         | Not Null                               |
-| total-capacity             | INT(3)                              | Not Null                               |
+| total_capacity             | INT(3)                              | Not Null                               |
 | amenities                  | VARCHAR(120)                        | Not Null                               |
 | price                      | INT(4)                              | Not Null                               |
-|accepted-cards              | VARCHAR(150)                        | Not Null                               |
-| private-room-capacity      | INT(2)                              | Not Null                               |
-| sofa-capacity              | INT(3)                              | Not Null                               |
+|accepted_cards              | VARCHAR(150)                        | Not Null                               |
+| private_room_capacity      | INT(2)                              | Not Null                               |
+| sofa_capacity              | INT(3)                              | Not Null                               |
 | location                   | VARCHAR(45)                         | Not Null                               |
 
 
