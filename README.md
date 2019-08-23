@@ -17,15 +17,26 @@ API URL : https://sia-lounge.herokuapp.com
 * #### For Lounge Management App
 
 1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials.
-2. **"/getLounge/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
-3. **"/getLoungeBookings"**, Methods("GET") - to get the all the Lounge Bookings (which are not checked-out yet) on present date. 
-4. **"/getLoungeDetails/[:lounge_id]"**, Methods("GET") - to get the the Lounge Details.
+2. **"/getLoungeBooking/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
+3. **"/getUpcomingLoungeBookings/[:lounge_id]"**, Methods("GET") - to get the all the upcoming Lounge Bookings.
+4. **"/getCurrentLoungeBookings/[:lounge_id]"**, Methods("GET") - to get the all the Lounge Bookings (which are checked-in) on present date. 
+5. **"/getLoungeDetails/[:lounge_id]"**, Methods("GET") - to get the Lounge Details with Lounge_ID.
+6. **"/checkin"**, Methods("POST")
+7. **"/checkout"**, Methods("POST")
+8. **"/getLoungeBookings/[:ffn]"**, Methods("GET") - to get the details of all Lounge Bookings for a particular FFN.
+9. **"/getLoungeDetails"**, Methods("GET") - to get all Lounge Details.
 
+* #### Payment Related
+
+1. **"/cardCheck"**, Methods("POST") -  to get the number of complimentary lounges left and list of available lounges for that card.
+   Params Required : card_number
+   
 
 #### Sample Data to try out API : 
 
 * FFN(Frequent Flyer Number) : 100254, 140026, 42210002, 42210012
 * Lounge ID : 410052, 410042
+* Card Number : 4577044405321376, 5589831300967730
 
 ## Structure of passenger_details Table
 
@@ -54,6 +65,9 @@ API URL : https://sia-lounge.herokuapp.com
 | -------------------------- | ---------------------------------------  | -------------------------------------- |            
 | ticket_id                  |  VARCHAR(60)                             | Primary Key, Not Null                  |
 | ffn                        |  VARCHAR(45)                             | Not Null                               |
+|lounge_id                   |                                          | Not Null                               |
+|lounge_name                 |                                          | Not Null                               |
+|lounge_address              |                                          | Not Null                               |
 | no_of_guests               |  INT(2)                                  | Not Null                               |
 | guest_names                |  VARCHAR                                 | Not Null                               |
 | checkin                    |  TIMESTAMP                               |                                        |
@@ -79,5 +93,14 @@ API URL : https://sia-lounge.herokuapp.com
 | private_room_capacity      | INT(2)                              | Not Null                               |
 | sofa_capacity              | INT(3)                              | Not Null                               |
 | location                   | VARCHAR(45)                         | Not Null                               |
+
+## Structure of card_details Table
+
+| Field Name (description)   |  Data Type                          |  Extras                                |
+| ------------               | ------------------                  | -------------------------------------- | 
+| card_number                |                                     | PRIMARY KEY, NOT NULL                  |
+| lounge_left                |                                     | NOT NULL                               |
+| available_lounge           |                                     | NOT NULL                               | 
+
 
 

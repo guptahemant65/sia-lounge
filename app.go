@@ -51,9 +51,16 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/createLoungeLogin", a.createLoungeLogin).Methods("POST")
 	//lounge-booking-get-create
 	a.Router.HandleFunc("/getLoungeBooking/{ticket_id}", a.getloungebooking).Methods("GET")
-	a.Router.HandleFunc("/getLoungeBookings", a.getloungebookings).Methods("GET")
+	a.Router.HandleFunc("/getLoungeBookings/{ffn:[0-9]+}", a.getloungebookingsbyffn).Methods("GET")
+	a.Router.HandleFunc("/getUpcomingLoungeBookings/{lounge_id:[0-9]+}", a.getupcomingloungebookings).Methods("GET")
+	a.Router.HandleFunc("/getCurrentLoungeBookings/{lounge_id:[0-9]+}", a.getcurrentloungebookings).Methods("GET")
 	a.Router.HandleFunc("/createLoungeBooking", a.createLoungeBooking).Methods("POST")
-	a.Router.HandleFunc("/getLoungeDetails/{lounge_id:[0-9]+}", a.getLoungeDetails).Methods("GET")
+	a.Router.HandleFunc("/getLoungeDetail/{lounge_id:[0-9]+}", a.getLoungeDetail).Methods("GET")
+	a.Router.HandleFunc("/getLoungeDetails", a.getLoungeDetails).Methods("GET")
+	a.Router.HandleFunc("/checkin", a.checkin).Methods("POST")
+	a.Router.HandleFunc("/checkout", a.checkout).Methods("POST")
+	//card-check
+	a.Router.HandleFunc("/cardCheck", a.getcardetails).Methods("POST")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
@@ -258,7 +265,7 @@ func (a *App) getloungebooking(w http.ResponseWriter, r *http.Request) {
 	if err := u.getloungebooking(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Booking ID not found in our database.")
+			respondWithError(w, http.StatusNotFound, "Ticket ID not found in our database")
 		default:
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
@@ -267,16 +274,39 @@ func (a *App) getloungebooking(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, u)
 }
 
-func (a *App) getloungebookings(w http.ResponseWriter, r *http.Request) {
+func (a *App) getupcomingloungebookings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	loungeID := vars["lounge_id"]
+	u := loungebooking{LoungeID: loungeID}
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))
-	if count > 10 || count < 1 {
-		count = 10
+	if count > 20 || count < 1 {
+		count = 20
 	}
 	if start < 0 {
 		start = 0
 	}
-	loungebookings, err := getloungebookings(a.DB, start, count)
+	loungebookings, err := u.getupcomingloungebookings(a.DB, start, count)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, loungebookings)
+}
+
+func (a *App) getcurrentloungebookings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	loungeID := vars["lounge_id"]
+	u := loungebooking{LoungeID: loungeID}
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+	if count > 20 || count < 1 {
+		count = 20
+	}
+	if start < 0 {
+		start = 0
+	}
+	loungebookings, err := u.getcurrentloungebookings(a.DB, start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -299,18 +329,103 @@ func (a *App) createLoungeBooking(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, u.BookingID)
 }
 
-func (a *App) getLoungeDetails(w http.ResponseWriter, r *http.Request) {
+func (a *App) getLoungeDetail(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	loungeid := vars["lounge_id"]
 
-	u := loungedetails{LoungeID: loungeid}
-	if err := u.getLoungeDetails(a.DB); err != nil {
+	u := loungedetail{LoungeID: loungeid}
+	if err := u.getLoungeDetail(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Lounge Detail not found.")
 		default:
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
+		return
+	}
+	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (a *App) checkin(w http.ResponseWriter, r *http.Request) {
+	var u checkinout
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.checkin(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "checkin successful"})
+}
+
+func (a *App) checkout(w http.ResponseWriter, r *http.Request) {
+	var u checkinout
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.checkout(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "checkout successful"})
+}
+
+func (a *App) getLoungeDetails(w http.ResponseWriter, r *http.Request) {
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+	if count > 10 || count < 1 {
+		count = 10
+	}
+	if start < 0 {
+		start = 0
+	}
+	loungedetails, err := getLoungeDetails(a.DB, start, count)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, loungedetails)
+}
+
+func (a *App) getloungebookingsbyffn(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	ffn := vars["ffn"]
+
+	u := loungebooking{FFN: ffn}
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+	if count > 10 || count < 1 {
+		count = 10
+	}
+	if start < 0 {
+		start = 0
+	}
+
+	loungebookingsbyffn, err := u.getloungebookingsbyffn(a.DB, start, count)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, loungebookingsbyffn)
+}
+
+func (a *App) getcardetails(w http.ResponseWriter, r *http.Request) {
+
+	var u cardcheck
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&u); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+	if err := u.getcardetails(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)

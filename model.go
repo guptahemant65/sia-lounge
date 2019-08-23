@@ -133,24 +133,29 @@ func (u *loginlounge) createLoungeLogin(db *sql.DB) error {
 // GET LOUNGE BOOKING DETAILS
 
 type loungebooking struct {
-	BookingID string `json:"ticket_id"`
-	FFN       string `json:"ffn"`
-	Num       string `json:"no_of_guests"`
-	Names     string `json:"guest_names"`
-	Checkin   string `json:"checkin"`
-	Checkout  string `json:"checkout"`
-	PNR       string `json:"pnr"`
-	Status    string `json:"status"`
+	BookingID     string `json:"ticket_id"`
+	FFN           string `json:"ffn"`
+	LoungeID      string `json:"lounge_id"`
+	LoungeName    string `json:"lounge_name"`
+	LoungeAddress string `json:"lounge_address"`
+	Num           string `json:"no_of_guests"`
+	Names         string `json:"guest_name"`
+	Checkin       string `json:"checkin"`
+	Checkout      string `json:"checkout"`
+	PNR           string `json:"pnr"`
+	Status        string `json:"status"`
+	PaymentMethod string `json:"payment_method"`
+	AmountPaid    string `json:"amount_paid"`
 }
 
 func (u *loungebooking) getloungebooking(db *sql.DB) error {
 
-	statement := fmt.Sprintf("SELECT ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
-	return db.QueryRow(statement).Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status)
+	statement := fmt.Sprintf("SELECT ffn,lounge_id,lounge_name,lounge_address,no_of_guests,guest_name,checkin,checkout,pnr,status,payment_method,amount_paid FROM lounge_booking WHERE ticket_id='%s'", u.BookingID)
+	return db.QueryRow(statement).Scan(&u.FFN, &u.LoungeID, &u.LoungeName, &u.LoungeAddress, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status, &u.PaymentMethod, &u.AmountPaid)
 }
 
-func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
-	statement := fmt.Sprintf("SELECT ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status FROM lounge_booking where status != 'completed' && TIMESTAMPDIFF(HOUR,checkin,CONVERT_TZ( current_timestamp(),'GMT','+08:00' ))<=12 ")
+func (u *loungebooking) getupcomingloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
+	statement := fmt.Sprintf("SELECT ticket_id,ffn,lounge_name,lounge_address,no_of_guests,guest_name,checkin,checkout,pnr,status,payment_method,amount_paid FROM lounge_booking where lounge_id = '%s' && status = 'confirmed' && TIMESTAMPDIFF(HOUR,checkin,CONVERT_TZ( current_timestamp(),'GMT','+08:00' ))<=12 ", u.LoungeID)
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
@@ -159,7 +164,7 @@ func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
 	loungebookings := []loungebooking{}
 	for rows.Next() {
 		var u loungebooking
-		if err := rows.Scan(&u.BookingID, &u.FFN, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status); err != nil {
+		if err := rows.Scan(&u.BookingID, &u.FFN, &u.LoungeName, &u.LoungeAddress, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status, &u.PaymentMethod, &u.AmountPaid); err != nil {
 			return nil, err
 		}
 		loungebookings = append(loungebookings, u)
@@ -167,10 +172,48 @@ func getloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
 	return loungebookings, nil
 }
 
+func (u *loungebooking) getcurrentloungebookings(db *sql.DB, start, count int) ([]loungebooking, error) {
+	statement := fmt.Sprintf("SELECT ffn,no_of_guests,guest_name,checkin,pnr,payment_method,amount_paid FROM lounge_booking where lounge_id = '%s' && status = 'in progress' ", u.LoungeID)
+	rows, err := db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	loungebookings := []loungebooking{}
+	for rows.Next() {
+		var u loungebooking
+		if err := rows.Scan(&u.FFN, &u.Num, &u.Names, &u.Checkin, &u.PNR, &u.PaymentMethod, &u.AmountPaid); err != nil {
+			return nil, err
+		}
+		loungebookings = append(loungebookings, u)
+	}
+	return loungebookings, nil
+}
+
+func (u *loungebooking) getloungebookingsbyffn(db *sql.DB, start, count int) ([]loungebooking, error) {
+	statement := fmt.Sprintf("SELECT ticket_id,ffn,lounge_id,lounge_name,lounge_address,no_of_guests,guest_name,checkin,checkout,pnr,status,payment_method,amount_paid FROM lounge_booking where status != 'completed' && ffn='%s' order by checkin", u.FFN)
+	rows, err := db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	loungebookingsbyffn := []loungebooking{}
+	for rows.Next() {
+		var u loungebooking
+		if err := rows.Scan(&u.BookingID, &u.FFN, &u.LoungeID, &u.LoungeName, &u.LoungeAddress, &u.Num, &u.Names, &u.Checkin, &u.Checkout, &u.PNR, &u.Status, &u.PaymentMethod, &u.AmountPaid); err != nil {
+			return nil, err
+		}
+		loungebookingsbyffn = append(loungebookingsbyffn, u)
+	}
+	return loungebookingsbyffn, nil
+}
+
 func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
 	rand.Seed(time.Now().UnixNano())
 	u.BookingID = randSeq(25)
-	statement := fmt.Sprintf("INSERT INTO lounge_booking(ticket_id,ffn,no_of_guests,guest_names,checkin,checkout,pnr,status) VALUES('%s','%s','%s','%s','%s','%s','%s','%s')", u.BookingID, u.FFN, u.Num, u.Names, u.Checkin, u.Checkout, u.PNR, u.Status)
+	loungedetailstmt := fmt.Sprintf("SELECT lounge_name,location from lounge_details where lounge_id = '%s'", u.LoungeID)
+	db.QueryRow(loungedetailstmt).Scan(&u.LoungeName, &u.LoungeAddress)
+	statement := fmt.Sprintf("INSERT INTO lounge_booking(ticket_id,ffn,lounge_id,lounge_name,lounge_address,no_of_guests,guest_name,checkin,checkout,pnr,status,payment_method,amount_paid) VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", u.BookingID, u.FFN, u.LoungeID, u.LoungeName, u.LoungeAddress, u.Num, u.Names, u.Checkin, u.Checkout, u.PNR, u.Status, u.PaymentMethod, u.AmountPaid)
 	_, err := db.Exec(statement)
 	if err != nil {
 		return err
@@ -179,7 +222,7 @@ func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
 	return nil
 }
 
-type loungedetails struct {
+type loungedetail struct {
 	LoungeID            string `json:"lounge_id"`
 	LoungeName          string `json:"lounge_name"`
 	Amenities           string `json:"amenities"`
@@ -190,8 +233,64 @@ type loungedetails struct {
 	Location            string `json:"location"`
 }
 
-func (u *loungedetails) getLoungeDetails(db *sql.DB) error {
+func (u *loungedetail) getLoungeDetail(db *sql.DB) error {
 
 	statement := fmt.Sprintf("SELECT lounge_name,amenities,price,accepted_cards,private_room_capacity,sofa_capacity,location FROM lounge_details WHERE lounge_id='%s'", u.LoungeID)
 	return db.QueryRow(statement).Scan(&u.LoungeName, &u.Amenities, &u.Price, &u.AcceptedCards, &u.PrivateRoomCapacity, &u.SofaCapacity, &u.Location)
+}
+
+func getLoungeDetails(db *sql.DB, start, count int) ([]loungedetail, error) {
+	statement := fmt.Sprintf("SELECT lounge_id,lounge_name,amenities,price,accepted_cards,private_room_capacity,sofa_capacity,location FROM lounge_details")
+	rows, err := db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	loungedetails := []loungedetail{}
+	for rows.Next() {
+		var u loungedetail
+		if err := rows.Scan(&u.LoungeID, &u.LoungeName, &u.Amenities, &u.Price, &u.AcceptedCards, &u.PrivateRoomCapacity, &u.SofaCapacity, &u.Location); err != nil {
+			return nil, err
+		}
+		loungedetails = append(loungedetails, u)
+	}
+	return loungedetails, nil
+}
+
+type checkinout struct {
+	TicketID string `json:"ticket_id"`
+}
+
+func (u *checkinout) checkin(db *sql.DB) error {
+	var statusin = "IN PROGRESS"
+	statement := fmt.Sprintf("UPDATE lounge_booking SET status = '%s' WHERE ticket_id = '%s'", statusin, u.TicketID)
+	_, err := db.Exec(statement)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *checkinout) checkout(db *sql.DB) error {
+	var statusout = "COMPLETED"
+	statement := fmt.Sprintf("UPDATE lounge_booking SET status = '%s' WHERE ticket_id = '%s'", statusout, u.TicketID)
+	_, err := db.Exec(statement)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type cardcheck struct {
+	CardNumber      string `json:"card_number"`
+	LoungeLeft      string `json:"llounge_left"`
+	AvailableLounge string `json:"available_lounge"`
+}
+
+func (u *cardcheck) getcardetails(db *sql.DB) error {
+
+	statement := fmt.Sprintf("SELECT lounge_left,available_lounge FROM card_details WHERE card_number='%s'", u.CardNumber)
+	return db.QueryRow(statement).Scan(&u.LoungeLeft, &u.AvailableLounge)
 }
