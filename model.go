@@ -285,7 +285,7 @@ func (u *checkinout) checkout(db *sql.DB) error {
 
 type cardcheck struct {
 	CardNumber      string `json:"card_number"`
-	LoungeLeft      string `json:"llounge_left"`
+	LoungeLeft      string `json:"lounge_left"`
 	AvailableLounge string `json:"available_lounge"`
 }
 
