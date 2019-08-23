@@ -16,6 +16,7 @@ API URL : https://sia-lounge.herokuapp.com
    **Params Required** : ffn, pass (Password) </br>
 7. **"/createLoungeBooking"**, Methods("POST") - to create a new lounge booking. </br>
    **Params Required** : ffn, lounge_id, no_of_guests, guest_name, checkin, pnr, payment_method, amount_paid </br>
+8. **"/getpnr/[:ffn]"**, Methods("GET") - to get all the upcoming fight bookings for an entered FFN.
 
 * #### For Lounge Management App
 

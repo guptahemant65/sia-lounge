@@ -435,8 +435,8 @@ func (a *App) getcardetails(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) getpnr(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	FFN := vars["ffn"]
-	u := flightbooking{FFN: FFN}
+	ffn := vars["ffn"]
+	u := flightbooking{FFN: ffn}
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))
 	if count > 20 || count < 1 {

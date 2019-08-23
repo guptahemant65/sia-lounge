@@ -299,8 +299,8 @@ func (u *cardcheck) getcardetails(db *sql.DB) error {
 type flightbooking struct {
 	PNR             string `json:"pnr"`
 	FFN             string `json:"ffn"`
-	From            string `json:"from"`
-	To              string `json:"to"`
+	From            string `json:"dep_from"`
+	To              string `json:"arr_to"`
 	TransitAirports string `json:"transit_airports"`
 	Time            string `json:"time"`
 	ExpectedTime    string `json:"updated_time"`
@@ -311,7 +311,7 @@ type flightbooking struct {
 }
 
 func (u *flightbooking) getpnr(db *sql.DB, start, count int) ([]flightbooking, error) {
-	statement := fmt.Sprintf("SELECT pnr,from,to,transit_aiports,time,updated_time,names,flight_code,terminal,gate FROM booking_table where ffn = '%s' ", u.FFN)
+	statement := fmt.Sprintf("SELECT pnr,dep_from,arr_to,transit_airports,time,updated_time,names,flight_code,terminal,gate FROM booking_table where ffn = '%s'", u.FFN)
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
