@@ -297,21 +297,20 @@ func (u *cardcheck) getcardetails(db *sql.DB) error {
 }
 
 type flightbooking struct {
-	PNR             string `json:"pnr"`
-	FFN             string `json:"ffn"`
-	From            string `json:"dep_from"`
-	To              string `json:"arr_to"`
-	TransitAirports string `json:"transit_airports"`
-	Time            string `json:"time"`
-	ExpectedTime    string `json:"updated_time"`
-	Names           string `json:"names"`
-	FlightCode      string `json:"flight_code"`
-	Terminal        string `json:"terminal"`
-	Gate            string `json:"gate"`
+	PNR          string `json:"pnr"`
+	FFN          string `json:"ffn"`
+	From         string `json:"dep_from"`
+	To           string `json:"arr_to"`
+	Time         string `json:"time"`
+	ExpectedTime string `json:"updated_time"`
+	Names        string `json:"names"`
+	FlightCode   string `json:"flight_code"`
+	Terminal     string `json:"terminal"`
+	Gate         string `json:"gate"`
 }
 
 func (u *flightbooking) getpnr(db *sql.DB, start, count int) ([]flightbooking, error) {
-	statement := fmt.Sprintf("SELECT pnr,dep_from,arr_to,transit_airports,time,updated_time,names,flight_code,terminal,gate FROM booking_table where ffn = '%s'", u.FFN)
+	statement := fmt.Sprintf("SELECT pnr,dep_from,arr_to,time,updated_time,names,flight_code,terminal,gate FROM booking_table where ffn = '%s'", u.FFN)
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
@@ -320,7 +319,7 @@ func (u *flightbooking) getpnr(db *sql.DB, start, count int) ([]flightbooking, e
 	flightbookings := []flightbooking{}
 	for rows.Next() {
 		var u flightbooking
-		if err := rows.Scan(&u.PNR, &u.From, &u.To, &u.TransitAirports, &u.Time, &u.ExpectedTime, &u.Names, &u.FlightCode, &u.Terminal, &u.Gate); err != nil {
+		if err := rows.Scan(&u.PNR, &u.From, &u.To, &u.Time, &u.ExpectedTime, &u.Names, &u.FlightCode, &u.Terminal, &u.Gate); err != nil {
 			return nil, err
 		}
 		flightbookings = append(flightbookings, u)
