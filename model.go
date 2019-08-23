@@ -209,6 +209,7 @@ func (u *loungebooking) getloungebookingsbyffn(db *sql.DB, start, count int) ([]
 }
 
 func (u *loungebooking) createLoungeBooking(db *sql.DB) error {
+	u.Status = "confirmed"
 	rand.Seed(time.Now().UnixNano())
 	u.BookingID = randSeq(25)
 	loungedetailstmt := fmt.Sprintf("SELECT lounge_name,location from lounge_details where lounge_id = '%s'", u.LoungeID)
@@ -293,4 +294,36 @@ func (u *cardcheck) getcardetails(db *sql.DB) error {
 
 	statement := fmt.Sprintf("SELECT lounge_left,available_lounge FROM card_details WHERE card_number='%s'", u.CardNumber)
 	return db.QueryRow(statement).Scan(&u.LoungeLeft, &u.AvailableLounge)
+}
+
+type flightbooking struct {
+	PNR             string `json:"pnr"`
+	FFN             string `json:"ffn"`
+	From            string `json:"from"`
+	To              string `json:"to"`
+	TransitAirports string `json:"transit_airports"`
+	Time            string `json:"time"`
+	ExpectedTime    string `json:"updated_time"`
+	Names           string `json:"names"`
+	FlightCode      string `json:"flight_code"`
+	Terminal        string `json:"terminal"`
+	Gate            string `json:"gate"`
+}
+
+func (u *flightbooking) getpnr(db *sql.DB, start, count int) ([]flightbooking, error) {
+	statement := fmt.Sprintf("SELECT pnr,from,to,transit_aiports,time,updated_time,names,flight_code,terminal,gate FROM booking_table where ffn = '%s' ", u.FFN)
+	rows, err := db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	flightbookings := []flightbooking{}
+	for rows.Next() {
+		var u flightbooking
+		if err := rows.Scan(&u.PNR, &u.From, &u.To, &u.TransitAirports, &u.Time, &u.ExpectedTime, &u.Names, &u.FlightCode, &u.Terminal, &u.Gate); err != nil {
+			return nil, err
+		}
+		flightbookings = append(flightbookings, u)
+	}
+	return flightbookings, nil
 }

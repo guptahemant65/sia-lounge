@@ -7,29 +7,35 @@ API URL : https://sia-lounge.herokuapp.com
 * #### For Client-side App
 
 1. **"/users"**, Methods("GET") - to get all details of all passengers.
-2. **"/user"**, Methods("POST") -  to create a new user.
+2. **"/user"**, Methods("POST") -  to create a new user. </br>
+   **Params Required** : name, email, country_code, mobile, tier_status, pass </br>
 3. **"/user/[:ffn]"**, Methods("GET") - to get details of specific passenger through FFN.
 4. **"/user/[:ffn]"**, Methods("PUT") - to modify the details of existing passengers.
 5. **"/user/[:ffn]"**, Methods("DELETE") - to delete passenger records.
-6. **"/userLogin"**, Methods("POST") - to authenticate the guest login credentials.
-7. **"/createLoungeBooking"**, Methods("POST") - to create a new lounge booking.
+6. **"/userLogin"**, Methods("POST") - to authenticate the guest login credentials. </br>
+   **Params Required** : ffn, pass (Password) </br>
+7. **"/createLoungeBooking"**, Methods("POST") - to create a new lounge booking. </br>
+   **Params Required** : ffn, lounge_id, no_of_guests, guest_name, checkin, pnr, payment_method, amount_paid </br>
 
 * #### For Lounge Management App
 
-1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials.
+1. **"/loungeLogin"**, Methods("POST") - to authenticate the lounge login credentials. </br>
+   **Params Required** : lounge_id, pass (password) </br>
 2. **"/getLoungeBooking/[:ticket_id]"**, Methods("GET") - to get the details of Lounge Booking through Lounge Booking ID/Ticket ID.
 3. **"/getUpcomingLoungeBookings/[:lounge_id]"**, Methods("GET") - to get the all the upcoming Lounge Bookings.
 4. **"/getCurrentLoungeBookings/[:lounge_id]"**, Methods("GET") - to get the all the Lounge Bookings (which are checked-in) on present date. 
 5. **"/getLoungeDetails/[:lounge_id]"**, Methods("GET") - to get the Lounge Details with Lounge_ID.
-6. **"/checkin"**, Methods("POST")
-7. **"/checkout"**, Methods("POST")
+6. **"/checkin"**, Methods("POST") </br>
+   **Params Required** : ticket_id </br>
+7. **"/checkout"**, Methods("POST") </br>
+   **Params Required** : ticket_id </br>
 8. **"/getLoungeBookings/[:ffn]"**, Methods("GET") - to get the details of all Lounge Bookings for a particular FFN.
 9. **"/getLoungeDetails"**, Methods("GET") - to get all Lounge Details.
 
 * #### Payment Related
 
-1. **"/cardCheck"**, Methods("POST") -  to get the number of complimentary lounges left and list of available lounges for that card.
-   Params Required : card_number
+1. **"/cardCheck"**, Methods("POST") -  to get the number of complimentary lounges left and list of available lounges for that card. </br>
+   **Params Required** : card_number </br>
    
 
 #### Sample Data to try out API : 

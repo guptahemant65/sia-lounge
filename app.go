@@ -61,6 +61,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/checkout", a.checkout).Methods("POST")
 	//card-check
 	a.Router.HandleFunc("/cardCheck", a.getcardetails).Methods("POST")
+	//pnr-check
+	a.Router.HandleFunc("/getpnr/{ffn:[0-9]+}", a.getpnr).Methods("GET")
 }
 
 func (a *App) getUserLogin(w http.ResponseWriter, r *http.Request) {
@@ -429,4 +431,24 @@ func (a *App) getcardetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (a *App) getpnr(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	FFN := vars["ffn"]
+	u := flightbooking{FFN: FFN}
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+	if count > 20 || count < 1 {
+		count = 20
+	}
+	if start < 0 {
+		start = 0
+	}
+	flightbookings, err := u.getpnr(a.DB, start, count)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, flightbookings)
 }
